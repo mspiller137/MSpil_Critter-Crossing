@@ -9,7 +9,7 @@ int main()
             << std::endl;
 
   // create window and set up
-  sf::RenderWindow window(sf::VideoMode(1080, 720), "Platform game");
+  sf::RenderWindow window(sf::VideoMode(1920, 1080), "MSpiller Critter Crossing");
   window.setFramerateLimit(60);
 
   //initialise an instance of the game class
