@@ -15,6 +15,15 @@ Game::~Game()
 
 bool Game::init()
 {
+	character = new sf::Sprite;
+	passport = new sf::Sprite;
+
+	
+
+	if (!loadTextures()) {
+		return false;
+	}
+
 
   return true;
 }
@@ -40,6 +49,26 @@ void Game::mouseClicked(sf::Event event)
 void Game::keyPressed(sf::Event event)
 {
 
+}
+
+bool Game::loadTextures() {
+	//TODO - Rename files and remove hardcoding later
+	for (int i = 0; i < 3; i++) {
+		switch (i) {
+		case 0:
+			characterTextures[i].loadFromFile("../Data/CritterCustoms/elephant.png");
+			passportTextures[i].loadFromFile("../Data/CritterCustoms/elephant passport.png");
+			break;
+		case 1:
+			characterTextures[i].loadFromFile("../Data/CritterCustoms/moose.png");
+			passportTextures[i].loadFromFile("../Data/CritterCustoms/moose passport.png");
+			break;
+		case 2:
+			characterTextures[i].loadFromFile("../Data/CritterCustoms/penguin.png");
+			passportTextures[i].loadFromFile("../Data/CritterCustoms/penguin passport.png");
+			break;
+		}		
+	}
 }
 
 

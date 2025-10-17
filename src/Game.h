@@ -15,10 +15,20 @@ class Game
   void mouseClicked(sf::Event event);
   void keyPressed(sf::Event event);
 
+
+
+
  private:
   sf::RenderWindow& window;
-  sf::Sprite ball;
-  sf::Texture ball_texture;
+
+  sf::Sprite* character;
+  sf::Sprite* passport;
+
+  sf::Texture* characterTextures = new sf::Texture[3];
+  sf::Texture* passportTextures = new sf::Texture[3];
+
+
+  bool loadTextures();
 
 };
 
