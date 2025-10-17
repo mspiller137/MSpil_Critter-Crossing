@@ -5,7 +5,7 @@
 Game::Game(sf::RenderWindow& game_window)
 	: window(game_window)
 {
-	srand(time(NULL));
+	srand(time(NULL));	
 }
 
 Game::~Game()
@@ -23,21 +23,25 @@ bool Game::init()
 	passport = new sf::Sprite;
 	background = new sf::Sprite;
 
-
 	if (!loadTextures()) {
 		return false;
 	}
+
+	newCharacter();
+
 	return true;
 }
 
 void Game::update(float dt)
 {
-
+	
 }
 
 void Game::render()
 {
 	window.draw(*background);
+	window.draw(*character);
+	window.draw(*passport);
 }
 
 void Game::mouseClicked(sf::Event event)
@@ -91,6 +95,29 @@ bool Game::loadTextures() {
 		}
 	}
 	return true;
+}
+
+void Game::newCharacter() {
+	passportAccepted = false;
+	passportRejected = false;
+
+	int characterIndex = rand() % 3;
+	int passportIndex = rand() % 3;
+	
+	if (characterIndex == passportIndex) {
+		shouldAccept = true;
+	}
+	else {
+		shouldAccept = false;
+	}
+
+	character->setTexture(characterTextures[characterIndex], true);
+	character->setScale(1.8, 1.8);
+	character->setPosition(window.getSize().x / 12, window.getSize().y / 12);
+
+	passport->setTexture(passportTextures[passportIndex], true);
+	passport->setScale(0.6, 0.6);
+	passport->setPosition(window.getSize().x / 2, window.getSize().y / 2);
 }
 
 

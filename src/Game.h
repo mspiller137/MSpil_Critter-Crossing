@@ -21,9 +21,12 @@ class Game
  private:
   sf::RenderWindow& window;
 
+  bool passportAccepted;
+  bool passportRejected;
+  bool shouldAccept;
+
   sf::Sprite* background;
   sf::Texture backgroundTexture;
-
   sf::Sprite* character;
   sf::Sprite* passport;
   sf::Texture* characterTextures = new sf::Texture[3];
@@ -31,6 +34,7 @@ class Game
 
 
   bool loadTextures();
+  void newCharacter();
 
 };
 
