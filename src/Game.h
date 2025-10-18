@@ -14,6 +14,9 @@ class Game
   void render();
   void mouseClicked(sf::Event event);
   void keyPressed(sf::Event event);
+  void keyReleased(sf::Event event);
+  void mousePressed(sf::Event event);
+  void mouseReleased(sf::Event event);
 
 
 
@@ -25,6 +28,8 @@ class Game
   bool passportRejected;
   bool shouldAccept;
 
+  sf::Sprite* dragged = nullptr;
+
   sf::Sprite* background;
   sf::Texture backgroundTexture;
   sf::Sprite* character;
@@ -35,6 +40,7 @@ class Game
 
   bool loadTextures();
   void newCharacter();
+  void dragSprite(sf::Sprite* sprite);
 
 };
 

@@ -5,7 +5,7 @@
 Game::Game(sf::RenderWindow& game_window)
 	: window(game_window)
 {
-	srand(time(NULL));	
+	srand(time(NULL));
 }
 
 Game::~Game()
@@ -34,7 +34,7 @@ bool Game::init()
 
 void Game::update(float dt)
 {
-	
+	dragSprite(dragged);
 }
 
 void Game::render()
@@ -47,8 +47,8 @@ void Game::render()
 void Game::mouseClicked(sf::Event event)
 {
 	//get the click position
+	std::cout << "click ping";
 	sf::Vector2i click = sf::Mouse::getPosition(window);
-
 
 }
 
@@ -57,9 +57,32 @@ void Game::keyPressed(sf::Event event)
 
 }
 
+void Game::keyReleased(sf::Event event) {
+
+}
+
+void Game::mousePressed(sf::Event event) {
+	std::cout << "press ping";
+	if (event.mouseButton.button == sf::Mouse::Left) {
+		std::cout << "left ping";
+		sf::Vector2i click = sf::Mouse::getPosition(window);
+		sf::Vector2f clickf = static_cast<sf::Vector2f>(click);
+
+		if (passport->getGlobalBounds().contains(clickf)) {
+			dragged = passport;
+		}
+	}
+}
+
+void Game::mouseReleased(sf::Event event) {
+	if (event.mouseButton.button == sf::Mouse::Left) {		
+		dragged = nullptr;
+	}
+}
+
 bool Game::loadTextures() {
 	//TODO - Rename files and remove hardcoding later
-	
+
 	backgroundTexture.loadFromFile("../Data/WhackaMole Worksheet/background.png");
 	background->setTexture(backgroundTexture);
 	background->setScale(
@@ -103,7 +126,7 @@ void Game::newCharacter() {
 
 	int characterIndex = rand() % 3;
 	int passportIndex = rand() % 3;
-	
+
 	if (characterIndex == passportIndex) {
 		shouldAccept = true;
 	}
@@ -118,6 +141,18 @@ void Game::newCharacter() {
 	passport->setTexture(passportTextures[passportIndex], true);
 	passport->setScale(0.6, 0.6);
 	passport->setPosition(window.getSize().x / 2, window.getSize().y / 2);
+}
+
+void Game::dragSprite(sf::Sprite* sprite) {
+	if (sprite != nullptr) {
+		sf::Vector2f dragOffset(sf::Vector2f(sprite->getGlobalBounds().getSize().x / 2, sprite->getGlobalBounds().getSize().y / 2));
+
+		sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+		sf::Vector2f mousePositionf = static_cast<sf::Vector2f>(mousePosition);
+
+		sf::Vector2f dragPosition = mousePositionf - dragOffset;
+		sprite->setPosition(dragPosition.x, dragPosition.y);
+	}
 }
 
 

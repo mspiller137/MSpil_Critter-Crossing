@@ -40,6 +40,24 @@ int main()
       // "close requested" event: we close the window
       if (event.type == sf::Event::Closed)
         window.close();
+
+      // Key related events
+      if (event.type == sf::Event::KeyPressed)
+      {
+          game.keyPressed(event);
+      }
+      else if (event.type == sf::Event::KeyReleased)
+      {
+          game.keyReleased(event);
+      }
+
+      //Mouse related events
+      if (event.type == sf::Event::MouseButtonPressed) {
+          game.mousePressed(event);
+      }
+      else if (event.type == sf::Event::MouseButtonReleased) {
+          game.mouseReleased(event);
+      }
     }
 
 
