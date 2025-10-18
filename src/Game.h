@@ -32,11 +32,18 @@ class Game
 
   sf::Sprite* background;
   sf::Texture backgroundTexture;
+
   sf::Sprite* character;
   sf::Sprite* passport;
   sf::Texture* characterTextures = new sf::Texture[3];
   sf::Texture* passportTextures = new sf::Texture[3];
 
+  sf::Sprite* acceptButton;
+  sf::Sprite* rejectButton;
+  sf::Texture* buttonTextures = new sf::Texture[2];
+
+  sf::Sprite* stamp;
+  sf::Texture* stampTextures = new sf::Texture[2];
 
   bool loadTextures();
   void newCharacter();

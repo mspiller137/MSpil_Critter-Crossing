@@ -12,9 +12,14 @@ Game::~Game()
 {
 	delete[] characterTextures;
 	delete[] passportTextures;
+	delete[] buttonTextures;
+	delete[] stampTextures;
 	delete background;
 	delete character;
 	delete passport;
+	delete acceptButton;
+	delete rejectButton;
+	delete stamp;
 }
 
 bool Game::init()
@@ -22,6 +27,9 @@ bool Game::init()
 	character = new sf::Sprite;
 	passport = new sf::Sprite;
 	background = new sf::Sprite;
+	acceptButton = new sf::Sprite;
+	rejectButton = new sf::Sprite;
+	stamp = new sf::Sprite;
 
 	if (!loadTextures()) {
 		return false;
@@ -41,6 +49,8 @@ void Game::render()
 {
 	window.draw(*background);
 	window.draw(*character);
+	window.draw(*acceptButton);
+	window.draw(*rejectButton);
 	window.draw(*passport);
 }
 
@@ -83,11 +93,37 @@ void Game::mouseReleased(sf::Event event) {
 bool Game::loadTextures() {
 	//TODO - Rename files and remove hardcoding later
 
-	backgroundTexture.loadFromFile("../Data/WhackaMole Worksheet/background.png");
+	if (!backgroundTexture.loadFromFile("../Data/WhackaMole Worksheet/background.png")) {
+		std::cout << "Error: texture failed to load at ../Data/WhackaMole Worksheet/background.png \n ";
+		return false;
+	}
 	background->setTexture(backgroundTexture);
 	background->setScale(
 		window.getSize().x / background->getGlobalBounds().width,
 		window.getSize().y / background->getGlobalBounds().height);
+
+	//TODO - Tweak button position
+	if (!buttonTextures[0].loadFromFile("../Data/CritterCustoms/accept button.png")) {
+		std::cout << "Error: texture failed to load at ../Data/CritterCustoms/accept button.png \n ";
+		return false;
+	}
+	acceptButton->setTexture(buttonTextures[0]);
+	acceptButton->setPosition(window.getSize().x / 4, (window.getSize().y / 8)*6);
+	if (!buttonTextures[1].loadFromFile("../Data/CritterCustoms/reject button.png")) {
+		std::cout << "Error: texture failed to load at ../Data/CritterCustoms/reject button.png \n ";
+		return false;
+	}
+	rejectButton->setTexture(buttonTextures[1]);
+	rejectButton->setPosition((window.getSize().x / 4) * 2, (window.getSize().y / 8) * 6);
+
+	if (!stampTextures[0].loadFromFile("../Data/CritterCustoms/accept.png")) {
+		std::cout << "Error: texture failed to load at ../Data/CritterCustoms/accept.png \n ";
+		return false;
+	}
+	if (!stampTextures[1].loadFromFile("../Data/CritterCustoms/reject.png")) {
+		std::cout << "Error: texture failed to load at ../Data/CritterCustoms/reject.png \n ";
+		return false;
+	}
 
 	std::string characterPath;
 	std::string passportPath;
@@ -140,7 +176,7 @@ void Game::newCharacter() {
 
 	passport->setTexture(passportTextures[passportIndex], true);
 	passport->setScale(0.6, 0.6);
-	passport->setPosition(window.getSize().x / 2, window.getSize().y / 2);
+	passport->setPosition(window.getSize().x / 2, window.getSize().y / 4);
 }
 
 void Game::dragSprite(sf::Sprite* sprite) {
