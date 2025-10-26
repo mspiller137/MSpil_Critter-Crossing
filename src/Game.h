@@ -27,6 +27,8 @@ class Game
   bool passportAccepted;
   bool passportRejected;
   bool shouldAccept;
+  bool buttonsVisible = false;
+  bool stampVisible = false;
 
   sf::Sprite* dragged = nullptr;
 
@@ -48,6 +50,7 @@ class Game
   bool loadTextures();
   void newCharacter();
   void dragSprite(sf::Sprite* sprite);
+  void stampPassport(bool isAccepted);
 
 };
 

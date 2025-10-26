@@ -43,21 +43,26 @@ bool Game::init()
 void Game::update(float dt)
 {
 	dragSprite(dragged);
+	if (stampVisible) {
+		stamp->setPosition(passport->getPosition().x + 50, passport->getPosition().y + 50);
+	}
 }
 
 void Game::render()
 {
 	window.draw(*background);
 	window.draw(*character);
-	window.draw(*acceptButton);
-	window.draw(*rejectButton);
 	window.draw(*passport);
+	window.draw(*stamp);
+	if (buttonsVisible) {
+		window.draw(*acceptButton);
+		window.draw(*rejectButton);
+	}	
 }
 
 void Game::mouseClicked(sf::Event event)
 {
 	//get the click position
-	std::cout << "click ping";
 	sf::Vector2i click = sf::Mouse::getPosition(window);
 
 }
@@ -72,19 +77,47 @@ void Game::keyReleased(sf::Event event) {
 }
 
 void Game::mousePressed(sf::Event event) {
-	std::cout << "press ping";
+	std::cout << "press ping \n";
+	sf::Vector2i click = sf::Mouse::getPosition(window);
+	sf::Vector2f clickf = static_cast<sf::Vector2f>(click);
 	if (event.mouseButton.button == sf::Mouse::Left) {
-		std::cout << "left ping";
-		sf::Vector2i click = sf::Mouse::getPosition(window);
-		sf::Vector2f clickf = static_cast<sf::Vector2f>(click);
+		//std::cout << "left ping";
 
 		if (passport->getGlobalBounds().contains(clickf)) {
 			dragged = passport;
+		}
+
+		if (acceptButton->getGlobalBounds().contains(clickf)) {
+			//Trigger Accept
+			stampPassport(true);
+		}
+		else if (rejectButton->getGlobalBounds().contains(clickf)) {
+			//Trigger Accept
+			stampPassport(false);
+		}
+		else {
+			buttonsVisible = false;
+			acceptButton->setPosition(-100, -100);
+			rejectButton->setPosition(-100, -100);
+		}
+	}
+	else if (event.mouseButton.button == sf::Mouse::Right) {
+		//if right clicking passport, bring up contextual
+		if (passport->getGlobalBounds().contains(clickf)) {
+			buttonsVisible = true;
+			acceptButton->setPosition(clickf.x + 50, clickf.y - 50);
+			rejectButton->setPosition(clickf.x + 50, clickf.y + 50);
+		}
+		else {
+			buttonsVisible = false;
+			acceptButton->setPosition(-100, -100);
+			rejectButton->setPosition(-100, -100);
 		}
 	}
 }
 
 void Game::mouseReleased(sf::Event event) {
+	std::cout << "release ping\n";
 	if (event.mouseButton.button == sf::Mouse::Left) {		
 		dragged = nullptr;
 	}
@@ -108,22 +141,24 @@ bool Game::loadTextures() {
 		return false;
 	}
 	acceptButton->setTexture(buttonTextures[0]);
-	acceptButton->setPosition(window.getSize().x / 4, (window.getSize().y / 8)*6);
+	acceptButton->setPosition(-100, -100);
+	acceptButton->setScale(0.5, 0.5);
 	if (!buttonTextures[1].loadFromFile("../Data/CritterCustoms/reject button.png")) {
 		std::cout << "Error: texture failed to load at ../Data/CritterCustoms/reject button.png \n ";
 		return false;
 	}
 	rejectButton->setTexture(buttonTextures[1]);
-	rejectButton->setPosition((window.getSize().x / 4) * 2, (window.getSize().y / 8) * 6);
+	rejectButton->setPosition(-100,-100);
+	rejectButton->setScale(0.5, 0.5);
 
-	if (!stampTextures[0].loadFromFile("../Data/CritterCustoms/accept.png")) {
-		std::cout << "Error: texture failed to load at ../Data/CritterCustoms/accept.png \n ";
-		return false;
-	}
-	if (!stampTextures[1].loadFromFile("../Data/CritterCustoms/reject.png")) {
+	if (!stampTextures[0].loadFromFile("../Data/CritterCustoms/reject.png")) {
 		std::cout << "Error: texture failed to load at ../Data/CritterCustoms/reject.png \n ";
 		return false;
 	}
+	if (!stampTextures[1].loadFromFile("../Data/CritterCustoms/accept.png")) {
+		std::cout << "Error: texture failed to load at ../Data/CritterCustoms/accept.png \n ";
+		return false;
+	}	
 
 	std::string characterPath;
 	std::string passportPath;
@@ -189,6 +224,15 @@ void Game::dragSprite(sf::Sprite* sprite) {
 		sf::Vector2f dragPosition = mousePositionf - dragOffset;
 		sprite->setPosition(dragPosition.x, dragPosition.y);
 	}
+}
+
+void Game::stampPassport(bool isAccepted) {
+	buttonsVisible = false;
+	acceptButton->setPosition(-100, -100);
+	rejectButton->setPosition(-100, -100);
+	stampVisible = true;
+	stamp->setTexture(stampTextures[static_cast<int>(isAccepted)]);
+	stamp->setPosition(passport->getPosition().x + 50, passport->getPosition().y + 50);
 }
 
 
