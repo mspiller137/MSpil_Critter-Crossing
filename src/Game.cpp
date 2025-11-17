@@ -57,7 +57,7 @@ void Game::render()
 	if (buttonsVisible) {
 		window.draw(*acceptButton);
 		window.draw(*rejectButton);
-	}	
+	}
 }
 
 void Game::mouseClicked(sf::Event event)
@@ -90,10 +90,12 @@ void Game::mousePressed(sf::Event event) {
 		if (acceptButton->getGlobalBounds().contains(clickf)) {
 			//Trigger Accept
 			stampPassport(true);
+			passportAccepted = true;
 		}
 		else if (rejectButton->getGlobalBounds().contains(clickf)) {
 			//Trigger Accept
 			stampPassport(false);
+			passportRejected = true;
 		}
 		else {
 			buttonsVisible = false;
@@ -118,8 +120,14 @@ void Game::mousePressed(sf::Event event) {
 
 void Game::mouseReleased(sf::Event event) {
 	std::cout << "release ping\n";
-	if (event.mouseButton.button == sf::Mouse::Left) {		
+	if (event.mouseButton.button == sf::Mouse::Left) {
 		dragged = nullptr;
+	}
+
+	sf::IntRect passportRect(passport->getPosition().x, passport->getPosition().y, passport->getGlobalBounds().getSize().x, passport->getGlobalBounds().getSize().y);
+	sf::IntRect characterRect(character->getPosition().x, character->getPosition().y, character->getGlobalBounds().getSize().x, character->getGlobalBounds().getSize().y);
+	if (passportRect.intersects(characterRect)) {
+		returnPassport();
 	}
 }
 
@@ -148,7 +156,7 @@ bool Game::loadTextures() {
 		return false;
 	}
 	rejectButton->setTexture(buttonTextures[1]);
-	rejectButton->setPosition(-100,-100);
+	rejectButton->setPosition(-100, -100);
 	rejectButton->setScale(0.5, 0.5);
 
 	if (!stampTextures[0].loadFromFile("../Data/CritterCustoms/reject.png")) {
@@ -158,7 +166,7 @@ bool Game::loadTextures() {
 	if (!stampTextures[1].loadFromFile("../Data/CritterCustoms/accept.png")) {
 		std::cout << "Error: texture failed to load at ../Data/CritterCustoms/accept.png \n ";
 		return false;
-	}	
+	}
 
 	std::string characterPath;
 	std::string passportPath;
@@ -215,6 +223,7 @@ void Game::newCharacter() {
 }
 
 void Game::dragSprite(sf::Sprite* sprite) {
+	//TODO - Update to not move passport to be centred on mouse
 	if (sprite != nullptr) {
 		sf::Vector2f dragOffset(sf::Vector2f(sprite->getGlobalBounds().getSize().x / 2, sprite->getGlobalBounds().getSize().y / 2));
 
@@ -233,6 +242,26 @@ void Game::stampPassport(bool isAccepted) {
 	stampVisible = true;
 	stamp->setTexture(stampTextures[static_cast<int>(isAccepted)]);
 	stamp->setPosition(passport->getPosition().x + 50, passport->getPosition().y + 50);
+}
+
+void Game::returnPassport() {
+	if (stampVisible) {
+		if ((shouldAccept && passportAccepted) || (!shouldAccept && passportRejected)) {
+			//correct option, increment score and spawn new set
+			std::cout << "Score up";
+		}
+		else {
+			//wrong option, decrease score and spawn new set
+			std::cout << "Score down";
+		}
+		//passportAccepted = false;
+		//passportRejected = false;
+	}
+	else {
+		//Has not been stamped, return to player
+		std::cout << "return to player";
+	}
+
 }
 
 

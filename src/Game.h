@@ -51,6 +51,7 @@ class Game
   void newCharacter();
   void dragSprite(sf::Sprite* sprite);
   void stampPassport(bool isAccepted);
+  void returnPassport();
 
 };
 
