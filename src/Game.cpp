@@ -254,12 +254,12 @@ void Game::returnPassport() {
 			//wrong option, decrease score and spawn new set
 			std::cout << "Score down";
 		}
-		//passportAccepted = false;
-		//passportRejected = false;
+		newCharacter();
 	}
 	else {
 		//Has not been stamped, return to player
 		std::cout << "return to player";
+		passport->setPosition(window.getSize().x / 2, window.getSize().y / 4);
 	}
 
 }
