@@ -6,6 +6,9 @@ Game::Game(sf::RenderWindow& game_window)
 	: window(game_window)
 {
 	srand(time(NULL));
+	game_state = "menu";
+	score = 0;
+	lives = 3;
 }
 
 Game::~Game()
@@ -24,6 +27,84 @@ Game::~Game()
 
 bool Game::init()
 {
+	if (!font.loadFromFile("../Data/Fonts/OpenSans-Bold.ttf"))
+	{
+		std::cout << "font did not load \n";
+	}
+
+	menuTitle.setFont(font);
+	menuTitle.setString("Critters Crossing");
+	menuTitle.setCharacterSize(75);
+	menuTitle.setFillColor(sf::Color(0, 0, 255, 255));
+	menuTitle.setPosition(
+		window.getSize().x / 2 - menuTitle.getGlobalBounds().width / 2,
+		(window.getSize().y / 4) - menuTitle.getGlobalBounds().height / 2);
+
+	menuPlayOption.setFont(font);
+	menuPlayOption.setString("> Play <");
+	menuPlayOption.setCharacterSize(50);
+	menuPlayOption.setFillColor(sf::Color(0, 0, 255, 255));
+	menuPlayOption.setPosition(
+		(window.getSize().x / 8 * 3) - menuPlayOption.getGlobalBounds().width / 2,
+		(window.getSize().y / 8 * 5) - menuPlayOption.getGlobalBounds().height / 2);
+
+	menuQuitOption.setFont(font);
+	menuQuitOption.setString("Quit");
+	menuQuitOption.setCharacterSize(50);
+	menuQuitOption.setFillColor(sf::Color(0, 0, 255, 255));
+	menuQuitOption.setPosition(
+		(window.getSize().x / 8 * 5) - menuQuitOption.getGlobalBounds().width / 2,
+		(window.getSize().y / 8 * 5) - menuQuitOption.getGlobalBounds().height / 2);
+
+	scoreText.setFont(font);
+	scoreText.setString("Score: 0");
+	scoreText.setCharacterSize(50);
+	scoreText.setFillColor(sf::Color(0, 0, 255, 255));
+	scoreText.setPosition(
+		(window.getSize().x / 8 * 3) - scoreText.getGlobalBounds().width / 2,
+		(window.getSize().y / 8 * 7) - scoreText.getGlobalBounds().height / 2 + 50);
+
+	livesLeftText.setFont(font);
+	livesLeftText.setString("Lives: 3");
+	livesLeftText.setCharacterSize(50);
+	livesLeftText.setFillColor(sf::Color(0, 0, 255, 255));
+	livesLeftText.setPosition(
+		(window.getSize().x / 8 * 5) - livesLeftText.getGlobalBounds().width / 2,
+		(window.getSize().y / 8 * 7) - livesLeftText.getGlobalBounds().height / 2 + 50);
+
+	countdownText.setFont(font);
+	countdownText.setString("Lives: 3");
+	countdownText.setCharacterSize(50);
+	countdownText.setFillColor(sf::Color(0, 0, 255, 255));
+	countdownText.setPosition(
+		(window.getSize().x / 8 * 7) - countdownText.getGlobalBounds().width / 2,
+		(window.getSize().y / 8 ) - countdownText.getGlobalBounds().height / 2);
+
+	hasWonText.setFont(font);
+	hasWonText.setString("");
+	hasWonText.setCharacterSize(75);
+	hasWonText.setFillColor(sf::Color(0, 0, 255, 255));
+	hasWonText.setPosition(
+		window.getSize().x / 2 - hasWonText.getGlobalBounds().width / 2,
+		(window.getSize().y / 4) - hasWonText.getGlobalBounds().height / 2);
+
+	endContinueOption.setFont(font);
+	endContinueOption.setString("> Continue <");
+	endContinueOption.setCharacterSize(50);
+	endContinueOption.setFillColor(sf::Color(0, 0, 255, 255));
+	endContinueOption.setPosition(
+		(window.getSize().x / 8 * 3) - endContinueOption.getGlobalBounds().width / 2,
+		(window.getSize().y / 8 * 5) - endContinueOption.getGlobalBounds().height / 2);
+
+	endQuitOption.setFont(font);
+	endQuitOption.setString("Quit");
+	endQuitOption.setCharacterSize(50);
+	endQuitOption.setFillColor(sf::Color(0, 0, 255, 255));
+	endQuitOption.setPosition(
+		(window.getSize().x / 8 * 5) - endQuitOption.getGlobalBounds().width / 2,
+		(window.getSize().y / 8 * 5) - endQuitOption.getGlobalBounds().height / 2);
+
+
 	character = new sf::Sprite;
 	passport = new sf::Sprite;
 	background = new sf::Sprite;
@@ -42,22 +123,50 @@ bool Game::init()
 
 void Game::update(float dt)
 {
-	dragSprite(dragged);
-	if (stampVisible) {
-		stamp->setPosition(passport->getPosition().x + 50, passport->getPosition().y + 50);
-	}
+	if (game_state == "game") {
+		countdownText.setString(std::to_string(static_cast<int>(60.0f - countdownClock.getElapsedTime().asSeconds())));
+		if (lives == 0) {
+			hasWon = false;
+			endGame();
+		}
+		if (countdownClock.getElapsedTime().asSeconds() <= 0.0f) {
+			hasWon = true;
+			endGame();
+		}
+		dragSprite(dragged);
+		if (stampVisible) {
+			stamp->setPosition(passport->getPosition().x + 50, passport->getPosition().y + 50);
+		}
+	}	
 }
 
 void Game::render()
 {
 	window.draw(*background);
-	window.draw(*character);
-	window.draw(*passport);
-	window.draw(*stamp);
-	if (buttonsVisible) {
-		window.draw(*acceptButton);
-		window.draw(*rejectButton);
+	if (game_state == "menu") {
+		window.draw(menuTitle);
+		window.draw(menuPlayOption);
+		window.draw(menuQuitOption);
 	}
+	else if (game_state == "game") {
+		window.draw(scoreText);
+		window.draw(livesLeftText);
+		window.draw(*character);
+		window.draw(*passport);
+		if (stampVisible) {
+			window.draw(*stamp);
+		}		
+		if (buttonsVisible) {
+			window.draw(*acceptButton);
+			window.draw(*rejectButton);
+		}
+		window.draw(countdownText);
+	}
+	else if (game_state == "end") {
+		window.draw(hasWonText);
+		window.draw(endContinueOption);
+		window.draw(endQuitOption);
+	}	
 }
 
 void Game::mouseClicked(sf::Event event)
@@ -69,7 +178,52 @@ void Game::mouseClicked(sf::Event event)
 
 void Game::keyPressed(sf::Event event)
 {
-
+	if (game_state == "menu") {
+		if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::D || event.key.code == sf::Keyboard::Right) {
+			if (playSelected) {
+				menuPlayOption.setString("Play");
+				menuQuitOption.setString("> Quit <");
+				playSelected = false;
+			}
+			else {
+				menuPlayOption.setString("> Play <");
+				menuQuitOption.setString("Quit");
+				playSelected = true;
+			}
+		}
+		else if (event.key.code == sf::Keyboard::Enter) {
+			if (playSelected) {
+				countdownClock.restart();
+				game_state = "game";
+			}
+			else {
+				window.close();
+			}
+		}
+	}
+	else if (game_state == "end") {
+		if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::D || event.key.code == sf::Keyboard::Right) {
+			if (continueSelected) {
+				endContinueOption.setString("Continue");
+				endQuitOption.setString("> Quit <");
+				continueSelected = false;
+			}
+			else {
+				endContinueOption.setString("> Continue <");
+				endQuitOption.setString("Quit");
+				continueSelected = true;
+			}
+		}
+		else if (event.key.code == sf::Keyboard::Enter) {
+			if (continueSelected) {
+				reset();
+				game_state = "menu";
+			}
+			else {
+				window.close();
+			}
+		}
+	}
 }
 
 void Game::keyReleased(sf::Event event) {
@@ -202,6 +356,7 @@ bool Game::loadTextures() {
 void Game::newCharacter() {
 	passportAccepted = false;
 	passportRejected = false;
+	stampVisible = false;	
 
 	int characterIndex = rand() % 3;
 	int passportIndex = rand() % 3;
@@ -248,12 +403,17 @@ void Game::returnPassport() {
 	if (stampVisible) {
 		if ((shouldAccept && passportAccepted) || (!shouldAccept && passportRejected)) {
 			//correct option, increment score and spawn new set
-			std::cout << "Score up";
+			score++;
+			std::string newString = "Score: " + std::to_string(score);
+			scoreText.setString(newString);
 		}
 		else {
 			//wrong option, decrease score and spawn new set
-			std::cout << "Score down";
+			lives--;
+			std::string newString = "Lives: " + std::to_string(lives);
+			livesLeftText.setString(newString);
 		}
+		stampVisible = false;
 		newCharacter();
 	}
 	else {
@@ -262,6 +422,33 @@ void Game::returnPassport() {
 		passport->setPosition(window.getSize().x / 2, window.getSize().y / 4);
 	}
 
+}
+
+void Game::reset() {
+	playSelected = true;
+	hasWon = false;
+	continueSelected = true;
+	score = 0;
+	lives = 3;
+	scoreText.setString("Score: 0");
+	livesLeftText.setString("Lives: 3");
+	dragged = nullptr;
+	countdownClock.restart();
+}
+
+void Game::endGame() {
+	std::string newString = "";
+	if (hasWon) {
+		newString = "You win with a score of " + std::to_string(score) + "!";
+	}
+	else {
+		newString = "You lose with a score of " + std::to_string(score) + "!";
+	}
+	hasWonText.setString(newString);
+	hasWonText.setPosition(
+		window.getSize().x / 2 - hasWonText.getGlobalBounds().width / 2,
+		(window.getSize().y / 4) - hasWonText.getGlobalBounds().height / 2);
+	game_state = "end";
 }
 
 

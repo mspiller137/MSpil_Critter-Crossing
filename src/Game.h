@@ -24,6 +24,28 @@ class Game
  private:
   sf::RenderWindow& window;
 
+  std::string game_state;
+
+  bool playSelected = true;
+  sf::Font font;
+  sf::Text menuTitle;
+  sf::Text menuPlayOption;
+  sf::Text menuQuitOption;
+
+  int lives;
+  int score;
+  sf::Text livesLeftText;
+  sf::Text scoreText;
+  sf::Text countdownText;
+
+  bool hasWon = false;
+  bool continueSelected = true;
+  sf::Text hasWonText;
+  sf::Text endContinueOption;
+  sf::Text endQuitOption;
+
+  sf::Clock countdownClock;
+
   bool passportAccepted;
   bool passportRejected;
   bool shouldAccept;
@@ -52,6 +74,8 @@ class Game
   void dragSprite(sf::Sprite* sprite);
   void stampPassport(bool isAccepted);
   void returnPassport();
+  void reset();
+  void endGame();
 
 };
 
